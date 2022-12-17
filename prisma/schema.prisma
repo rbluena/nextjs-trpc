@@ -9,3 +9,66 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
+
+model User {
+  id    String @unique @default(cuid())
+  email String @unique @db.VarChar(200)
+  name  String
+  carts Cart[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+model Product {
+  id          String     @unique @default(cuid())
+  name        String
+  description String     @db.Text
+  category    Category   @relation(fields: [categoryId], references: [id])
+  categoryId  String
+  price       Int
+  cartItems   CartItem[]
+
+  @@map("products")
+}
+
+model Category {
+  id       String    @unique @default(cuid())
+  name     String
+  products Product[]
+
+  @@map("categories")
+}
+
+model CartItem {
+  id        String  @unique @default(cuid())
+  product   Product @relation(fields: [productId], references: [id])
+  productId String
+  quantity  Int
+  cart      Cart    @relation(fields: [cartId], references: [id])
+  cartId    String
+
+  @@map("cart_items")
+}
+
+model Cart {
+  id         String     @unique @default(cuid())
+  totalPrice Int
+  status     CartStatus @default(PENDING)
+
+  owner     User?      @relation(fields: [userId], references: [id])
+  userId    String?
+  cartItems CartItem[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime
+
+  @@map("cart")
+}
+
+enum CartStatus {
+  PENDING
+  COMPLETED
+}
