@@ -7,7 +7,6 @@ export default trpcNext.createNextApiHandler({
   createContext: createServerContext,
   onError({ error }) {
     if (error.code === "INTERNAL_SERVER_ERROR") {
-      // TODO: Log errors to the appropriate service
       console.log(`Something went wrong on  our side, we are working on it!`);
     }
   },

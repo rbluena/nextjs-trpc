@@ -1,9 +1,8 @@
 import * as trpc from "@trpc/server";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { prisma } from "~/utils/prisma";
 
 /**
- * TODO: import prisma here, ref to github example
- * @param param0
  * @returns
  */
 export function createServerContext({
@@ -16,8 +15,9 @@ export function createServerContext({
   return {
     req,
     res,
-    // prisma,
-    // task: prisma.task,
+    prisma,
+    Product: prisma.product,
+    User: prisma.user,
   };
 }
 

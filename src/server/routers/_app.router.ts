@@ -1,12 +1,8 @@
-import { router, procedure } from "../router";
+import { router } from "../router";
+import { userRouter } from "./user.router";
 
 export const appRouter = router({
-  // hello: helloRouter,
-  hello: procedure.query(({ input }) => {
-    console.log(input);
-
-    return "Hello from world!";
-  }),
+  users: userRouter,
 });
 
 export type AppRouter = typeof appRouter;
