@@ -39,6 +39,8 @@ export const trpc = createTRPCNext<AppRouter>({
             "x-ssr": "1",
           };
         }
+
+        return {};
       },
 
       /**

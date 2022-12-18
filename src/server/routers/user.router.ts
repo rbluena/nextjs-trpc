@@ -1,7 +1,5 @@
-import { router, procedure } from "../router";
+import { baseRouter, publicProcedure } from "../router";
 
-export const userRouter = router({
-  all: procedure.query(() => {
-    return [];
-  }),
+export const userRouter = baseRouter({
+  list: publicProcedure.query(() => []),
 });
