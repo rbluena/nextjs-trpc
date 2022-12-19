@@ -19,6 +19,7 @@ model User {
   createdAt DateTime     @default(now())
   updatedAt DateTime     @updatedAt
   authToken LoginToken[]
+  Session   Session[]
 
   @@map("users")
 }
@@ -71,9 +72,25 @@ model Cart {
 
 model LoginToken {
   id       String @unique @default(cuid())
-  user     User   @relation(fields: [userId], references: [id])
   userId   String
   redirect String @default("/")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("login_token")
+}
+
+model Session {
+  id                String @unique @default(cuid())
+  userId            String
+  accessToken       String @db.Text
+  refreshToken      String @db.Text
+  verificationToken String @db.Text
+  redirect          String @default("/")
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("session")
 }
 
 enum CartStatus {
