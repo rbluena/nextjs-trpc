@@ -3,7 +3,6 @@ import { useRouter } from "next/router";
 import { Submit, TextInput, EmailInput } from "~/components/form";
 import { Layout, SEO, Footer, Header } from "~/components/layout";
 import { trpc } from "~/lib/trpc";
-import { useState } from "react";
 
 type FormValues = {
   name: string;
@@ -16,23 +15,15 @@ const Signup = () => {
     register,
     formState: { isValid, isDirty },
   } = useForm<FormValues>();
-  const mutation = trpc.user.create.useMutation({});
-  const [isLoading, setIsLoading] = useState(false);
+
+  const mutation = trpc.user.register.useMutation();
 
   const router = useRouter();
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
-    setIsLoading(true);
-
     mutation.mutate(data, {
       onSuccess() {
         router.push("/signin");
-      },
-      onSettled() {
-        setIsLoading(false);
-      },
-      onError() {
-        setIsLoading(false);
       },
     });
   };
@@ -48,7 +39,8 @@ const Signup = () => {
             onSubmit={handleSubmit(onSubmit)}
           >
             <h1 className="text-2xl text-center">Rigister</h1>
-            {mutation.error ? mutation.error.message : null}
+            {mutation.error ? <span>{mutation.error.message}</span> : null}
+
             <TextInput
               name="name"
               label="Name"
@@ -65,7 +57,7 @@ const Signup = () => {
             />
 
             <div className="my-4">
-              <Submit disabled={isLoading || !isValid || !isDirty}>
+              <Submit disabled={mutation.isLoading || !isValid || !isDirty}>
                 Submit
               </Submit>
             </div>

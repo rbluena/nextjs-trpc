@@ -1,6 +1,7 @@
 import { SubmitHandler, useForm } from "react-hook-form";
 import { Submit, EmailInput } from "~/components/form";
 import { Layout, SEO, Header, Footer } from "~/components/layout";
+import { trpc } from "~/lib/trpc";
 
 type FormValues = {
   fullName: string;
@@ -14,7 +15,10 @@ const Signin = () => {
     formState: { isDirty, isValid, isSubmitting },
   } = useForm<FormValues>();
 
+  const mutation = trpc.user.login.useMutation();
+
   const onSubmit: SubmitHandler<FormValues> = (data) => {
+    mutation.mutate(data);
     console.log(data);
   };
 
@@ -29,6 +33,8 @@ const Signin = () => {
             onSubmit={handleSubmit(onSubmit)}
           >
             <h1 className="text-2xl text-center">Sign in</h1>
+            {mutation.error ? <span>{mutation.error.message}</span> : null}
+
             <EmailInput
               name="email"
               label="Email"
@@ -38,7 +44,11 @@ const Signin = () => {
             />
 
             <div className="my-4">
-              <Submit disabled={!isDirty || !isValid || isSubmitting}>
+              <Submit
+                disabled={
+                  mutation.isLoading || !isDirty || !isValid || isSubmitting
+                }
+              >
                 Signin
               </Submit>
             </div>
