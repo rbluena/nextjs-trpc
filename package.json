@@ -5,7 +5,8 @@
     "build": "next build",
     "start": "next start",
     "db:migrate": "npx prisma migrate dev --name",
-    "db:studio": "npx prisma studio"
+    "db:studio": "npx prisma studio",
+    "db:format": "npx prisma format"
   },
   "dependencies": {
     "@prisma/client": "^4.7.1",
