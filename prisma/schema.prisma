@@ -81,12 +81,12 @@ model LoginToken {
 }
 
 model Session {
-  id                String @unique @default(cuid())
+  id                String  @unique @default(cuid())
   userId            String
-  accessToken       String @db.Text
-  refreshToken      String @db.Text
-  verificationToken String @db.Text
-  redirect          String @default("/")
+  accessToken       String? @db.Text
+  refreshToken      String? @db.Text
+  verificationToken String? @db.Text
+  redirect          String? @default("/")
 
   user User @relation(fields: [userId], references: [id])
 
