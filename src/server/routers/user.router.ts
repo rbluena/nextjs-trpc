@@ -7,7 +7,10 @@ import {
   verifyTokenSchema,
 } from "~/schema/user.schema";
 import generateHashToken from "~/utils/token";
+import { isAuthenticatedMiddleware } from "~/server/middleware";
 import { baseRouter, publicProcedure } from "../router";
+
+const protectedProcedure = publicProcedure.use(isAuthenticatedMiddleware);
 
 export const userRouter = baseRouter({
   register: publicProcedure
@@ -21,7 +24,10 @@ export const userRouter = baseRouter({
           },
         });
 
-        return createdUser;
+        return {
+          data: createdUser,
+          message: "User has been created successfully!",
+        };
       } catch (error) {
         if (error instanceof PrismaClientKnownRequestError) {
           if (error.code === "P2002") {
@@ -51,12 +57,12 @@ export const userRouter = baseRouter({
         });
 
         // Generating verification token
-        const generatedToken = await generateHashToken();
+        const verificationToken = await generateHashToken();
 
-        const loginToken = await prisma.loginToken.create({
+        const login = await prisma.session.create({
           data: {
             redirect,
-            id: generatedToken,
+            verificationToken,
             user: {
               connect: {
                 id: user.id,
@@ -68,8 +74,13 @@ export const userRouter = baseRouter({
         sendLoginEmail({
           email: user.email,
           name: user.name,
-          token: loginToken.id,
+          token: login.id,
         });
+
+        return {
+          data: {},
+          message: "Check your email to find link to login!",
+        };
       } catch (error) {
         if (error instanceof PrismaClientKnownRequestError) {
           throw new TRPCError({
@@ -88,7 +99,7 @@ export const userRouter = baseRouter({
     .input(verifyTokenSchema)
     .query(async ({ input, ctx: { prisma } }) => {
       try {
-        const verified = await prisma.loginToken.findFirst({
+        const verified = await prisma.session.findFirst({
           where: {
             id: input.token,
           },
@@ -114,4 +125,7 @@ export const userRouter = baseRouter({
         });
       }
     }),
+  me: protectedProcedure.query(({ ctx }) => {
+    return {};
+  }),
 });

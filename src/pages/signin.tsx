@@ -17,9 +17,12 @@ const Signin = () => {
 
   const mutation = trpc.user.login.useMutation();
 
+  /**
+   * Sending verification token when email submitted
+   * @param data FormValues
+   */
   const onSubmit: SubmitHandler<FormValues> = (data) => {
     mutation.mutate(data);
-    console.log(data);
   };
 
   return (
@@ -33,7 +36,14 @@ const Signin = () => {
             onSubmit={handleSubmit(onSubmit)}
           >
             <h1 className="text-2xl text-center">Sign in</h1>
-            {mutation.error ? <span>{mutation.error.message}</span> : null}
+            {mutation.error ? (
+              <span className="text-cerise-600">{mutation.error.message}</span>
+            ) : null}
+            {mutation.data?.message ? (
+              <span className="text-submarine-600">
+                {mutation.data.message}
+              </span>
+            ) : null}
 
             <EmailInput
               name="email"

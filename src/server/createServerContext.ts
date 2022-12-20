@@ -15,9 +15,8 @@ export function createServerContext({
   return {
     req,
     res,
+    user: null,
     prisma,
-    Product: prisma.product,
-    User: prisma.user,
   };
 }
 
